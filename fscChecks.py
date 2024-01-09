@@ -1,8 +1,10 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
+from statsmodels.nonparametric.smoothers_lowess import lowess
+from scipy.signal import find_peaks
 
 class fscChecks():
-    '''This class is designed to run checks on the FSC curve of every entry staged for release. Each check should be added as a function and then called in main.py'''
+    '''This class is designed to run checks on the FSC curve of every entry staged for release. Each check should be added as a function and then called in RunChecksPerCheck.py'''
     def __init__(self, inputFile):
         self.fscFile = inputFile
 
@@ -20,37 +22,66 @@ class fscChecks():
         finalPoint = data[len(data)-1]
         return finalPoint
 
-    def gradientCheck(self):
-        #look for curves which increase in correlation after already hitting a minimum
-        #Start by defining x and y values
-        y = np.array(self.fscCurves['fsc'])
-        x = np.arange(len(y))
+    def minFinalDifValue(self):
+        data = self.fscCurves['fsc']
+        difValue = min(self.fscCurves['fsc']) - data[len(data)-1]
+        return difValue
 
-        #determine the minimum value after which we should look at correlation
-        initial_drop_index = np.argmin(y)
+    def gradientCheck(self, window_size=5, drop_threshold=0.7):
+        data = self.fscCurves['fsc']
+        try:
+            max_gradient_change = 0  # Initialize maximum gradient change
+            for i in range(window_size, len(data)):
+                window_data = data[i - window_size: i]  # Extract data within the window
+                drop_condition = abs(window_data[-1] - window_data[0]) > drop_threshold
+                if drop_condition:
+                    differences = [window_data[j] - window_data[j - 1] for j in range(1, window_size)]
+                    average_difference = sum(differences) / (window_size - 1)
+                    if abs(average_difference) > max_gradient_change:
+                        max_gradient_change = abs(average_difference)
 
-        if initial_drop_index != len(y) - 1:
-            total_values = len(y)
-            half_index = total_values // 2
+            return max_gradient_change
+        except Exception as e:
+            raise Exception(f"Failed to find the largest gradient change {e}")
 
-            y_first_half = y[:half_index]
-            y_second_half = y[half_index:]
+    def peakFinder(self):
+        # start by smoothing the line
 
-            # Create x values corresponding to the length of the y values
-            x_values = np.arange(total_values)
+        # Example dataset (replace this with your actual data)
+        originalData = self.fscCurves['fsc']
 
-            # Perform linear regression for both segments
-            slope_first_half, _ = np.polyfit(np.arange(len(y_first_half)), y_first_half, 1)
-            slope_second_half, _ = np.polyfit(np.arange(len(y_second_half)), y_second_half, 1)
+        # Fraction of points used to fit each local regression
+        fraction = 0.05
 
-            return abs(np.round(slope_second_half, 3))
-        else:
-            print('The initial drop index is the last index in the data. The gradient is set to 0')
-            return 0
+        # Apply LOESS smoothing to the data
+        smoothed_data = lowess(originalData, range(len(originalData)), frac=fraction)[:, 1]
 
-    def zeroCheck(self):
-        #check whether the FSC curve reaches zero
-        print('a')
-    def subZeroCheck(self):
-        #check whether FSC curve drops significantly below 0
-        print('a')
+        #  Find peaks in the smoothed data
+        peaks, _ = find_peaks(smoothed_data, distance=5, prominence=0.1)  # Adjust distance parameter as needed
+
+        # Plotting the original and smoothed data
+        # plt.figure(figsize=(8, 6))
+        # plt.plot(originalData, label='Original Data')
+        # plt.plot(smoothed_data, label='Smoothed Data')
+        # plt.plot(peaks, smoothed_data[peaks], 'r.', markersize=10, label='Detected Peaks')
+        # plt.legend()
+        # plt.title('Smoothing Data with LOESS')
+        # plt.xlabel('Data Points')
+        # plt.ylabel('Values')
+        # plt.savefig('{}peaks.png'.format(entry))
+        # plt.show()
+        return len(peaks)
+    def fscPlotter(self, filepath):
+        try:
+            plt.figure()
+            fsc_values = self.fscCurves['fsc']
+            plt.plot(range(len(fsc_values)), fsc_values)
+            plt.title(filepath)
+            plt.savefig('{}.png'.format(filepath))
+            plt.close()  # Close the figure to free up memory
+        except FileNotFoundError as e:
+            print(f"FileNotFoundError: {e}")
+            print('Failed to save figure. File not found.')
+        except Exception as e:
+            print(f"Error: {e}")
+            print('Failed to save figure.')
