@@ -4,7 +4,7 @@ from PIL import Image
 import io
 
 class falseColourChecks():
-    '''This class is designed to run checks on the FSC curve of every entry staged for release. Each check should be added as a function and then called in RunChecksPerCheck.py'''
+    '''This class is designed to run checks on the VA images. Each check should be added as a function and then called in RunChecksPerCheck.py'''
     def __init__(self, inputFile):
         self.input = inputFile
 
