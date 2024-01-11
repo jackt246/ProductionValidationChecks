@@ -14,6 +14,7 @@ class importJsons():
         entry = entry.strip('emd-')
         urlExtension = 'va-{}/va/emd_{}_all.json'.format(entry, entry)
         fullUrl = self.baseUrl + urlExtension
+
         try:
             # Send a GET request to the URL
             response = requests.get(fullUrl)

@@ -24,7 +24,7 @@ class fscChecks():
 
     def minFinalDifValue(self):
         data = self.fscCurves['fsc']
-        difValue = min(self.fscCurves['fsc']) - data[len(data)-1]
+        difValue = data[len(data)-1] - min(self.fscCurves['fsc'])
         return difValue
 
     def gradientCheck(self, window_size=5, drop_threshold=0.7):

@@ -2,7 +2,7 @@
 
 
 class qScoreChecks():
-    '''This class is designed to run checks on the FSC curve of every entry staged for release. Each check should be added as a function and then called in main.py'''
+    '''This class is designed to run checks on the FSC curve of every entry staged for release. Each check should be added as a function and then called in RunChecksPerCheck.py'''
     def __init__(self, inputFile):
         self.inputFile = inputFile
 
