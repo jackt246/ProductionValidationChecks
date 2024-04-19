@@ -6,10 +6,10 @@ from scipy.signal import find_peaks
 class fscChecks():
     '''This class is designed to run checks on the FSC curve of every entry staged for release. Each check should be added as a function and then called in RunChecksPerCheck.py'''
     def __init__(self, inputFile):
-        self.fscFile = inputFile
+        self.json = inputFile
 
         try:
-            self.fscData = self.fscFile['fsc']
+            self.fscData = self.json['fsc']
             self.fscCurves = self.fscData['curves']
         except KeyError as e:
             raise Exception(f"Error: Required data not found in the JSON file. {e}")
@@ -27,7 +27,7 @@ class fscChecks():
         difValue = data[len(data)-1] - min(self.fscCurves['fsc'])
         return difValue
 
-    def gradientCheck(self, window_size=5, drop_threshold=0.7):
+    def largeDropCheck(self, window_size=5, drop_threshold=0.7):
         data = self.fscCurves['fsc']
         try:
             max_gradient_change = 0  # Initialize maximum gradient change
@@ -43,6 +43,17 @@ class fscChecks():
             return max_gradient_change
         except Exception as e:
             raise Exception(f"Failed to find the largest gradient change {e}")
+
+    def maxGradientCheck(self, window_size=5):
+        data = self.fscCurves['fsc']
+        max_change = float('-inf')  # Initialize with negative infinity for comparison
+        for i in range(window_size, len(data)):
+            window_data = data[i - window_size: i]  # Extract data within the window
+            differences = [window_data[j] - window_data[j - 1] for j in range(1, window_size)]
+            average_difference = sum(differences) / (window_size - 1)
+            max_change = max(max_change, abs(average_difference))
+
+        return max_change
 
     def peakFinder(self):
         # start by smoothing the line
@@ -76,6 +87,8 @@ class fscChecks():
             plt.figure()
             fsc_values = self.fscCurves['fsc']
             plt.plot(range(len(fsc_values)), fsc_values)
+            plt.axhline(y=0, color='red', linestyle='--', label='Zero Line')
+            plt.axhline(y=0.143, color='orange', linestyle='--', label='0.143 Line')
             plt.title(filepath)
             plt.savefig('{}.png'.format(filepath))
             plt.close()  # Close the figure to free up memory

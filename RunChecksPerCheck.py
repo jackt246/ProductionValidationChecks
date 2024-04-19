@@ -39,15 +39,15 @@ if __name__ == '__main__':
     # -------------Initial parameters------------------#
     # Put in a parameters file when feeling less lazy
     # set base URL used to access VA JSON files:
-    urlString = 'https://wwwint.ebi.ac.uk/emdb/emdb-entry/emdbva/'
+    urlString = 'https://www.ebi.ac.uk/emdb/emdb-entry/emdbva/'
     # set which checks you want to run
     runFSC = True
-    runQscore = True
-    runMaskCheck = True
+    runQscore = False
+    runMaskCheck = False
     # -------------------------------------------------#
 
     # import a list of entry IDs
-    with open('emdb_release_list', 'r') as entryimport:
+    with open('2002_2020_withhalfmaps.txt', 'r') as entryimport:
         entries = entryimport.readlines()
     entryList = []
     for line in entries:
@@ -82,11 +82,11 @@ if __name__ == '__main__':
                 peakDic[entry] = fscChecker.peakFinder()
                 # gradient check
                 try:
-                    gradientFscDic[entry] = fscChecker.gradientCheck()
+                    gradientFscDic[entry] = fscChecker.maxGradientCheck()
                 except Exception as e:
                     print(f"no steep gradient detected. {e}")
                 # Plot FSC curves to do manual inspection
-                # fscChecker.fscPlotter('FSCCurves/{}'.format(entry))
+                fscChecker.fscPlotter('FSCCurves/{}'.format(entry))
                 #thresholds:
                 minThreshold = -0.1
                 finalThreshold = 0.1

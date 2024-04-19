@@ -30,12 +30,12 @@ if __name__ == '__main__':
     urlString = 'https://wwwint.ebi.ac.uk/emdb/emdb-entry/emdbva/'
     # set which checks you want to run
     runFSC = True
-    runQscore = True
+    runQscore = False
     runMaskCheck = True
     # -------------------------------------------------#
 
     # import a list of entry IDs
-    with open('emdb_release_list', 'r') as entryimport:
+    with open('CurrentRelease.txt', 'r') as entryimport:
         entries = entryimport.readlines()
     entryList = []
     for line in entries:
@@ -60,8 +60,11 @@ if __name__ == '__main__':
                 checkDic[entry]['FSC']['Final Value'] = fscChecker.finalValue()
                 # peak finding
                 checkDic[entry]['FSC']['Detected Peaks'] = fscChecker.peakFinder()
-                #Gradient check
-                checkDic[entry]['FSC']['Gradient drop'] = fscChecker.gradientCheck()
+                #large drop check
+                #checkDic[entry]['FSC']['large drop'] = fscChecker.largeDropCheck()
+                #gradient check
+                checkDic[entry]['FSC']['largest gradient'] = fscChecker.maxGradientCheck()
+                #
             except Exception as e:
                 # Handle the case where fscChecks initialization failed
                 checkDic[entry]['FSC']['missingFSC'] = 'True'
@@ -90,6 +93,7 @@ if __name__ == '__main__':
 
             except Exception as e:
                 print('failed to check for masking in half-maps')
+                checkDic[entry]['ImageChecks']['Mask check failed'] = 'True'
 
     with open('checkJSON_staging.json', 'w') as json_file:
         json.dump(checkDic, json_file)

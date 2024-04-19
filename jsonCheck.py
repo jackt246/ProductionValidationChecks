@@ -33,8 +33,8 @@ def calcPercentileRange(data, percentileBot, percentileTop):
 
 # ------- parameters --------#
 # open the json file
-jsonFile = openJson('checkJSON.json')
-plotGraphs = True
+jsonFile = openJson('checkJSON_staging.json')
+plotGraphs = False
 
 #FSC thresholds:
 minThreshold = -0.1
@@ -47,7 +47,7 @@ qScoreThreshold = 0.3
 
 #Masking threshold
 
-maskingThreshold = 18
+maskingThreshold = 21
 paddingThreshold = 5
 
 # ------ start code ------- #
@@ -83,10 +83,13 @@ for emdCode, emdData in jsonFile.items():
             fscPeakNum.append(emdData['FSC']['Detected Peaks'])
             if emdData['FSC']['Detected Peaks'] > peakThreshold:
                 entriesWithIssues[emdCode]['issues']['FSCpeakValue'] = emdData['FSC']['Detected Peaks']
-        if 'Gradient drop' in emdData['FSC']:
-            fscGradient.append(emdData['FSC']['Gradient drop'])
-            if emdData['FSC']['Gradient drop'] > gradientThreshold:
-                entriesWithIssues[emdCode]['issues']['FSCgradientValue'] = emdData['FSC']['Gradient drop']
+        if 'largest gradient' in emdData['FSC']:
+            fscGradient.append(emdData['FSC']['largest gradient'])
+            if emdData['FSC']['largest gradient'] > gradientThreshold:
+                entriesWithIssues[emdCode]['issues']['FSCgradientValue'] = emdData['FSC']['largest gradient']
+
+        if 'missingFSC' in emdData['FSC']:
+            entriesWithIssues[emdCode]['issues']['missingFSC'] = emdData['FSC']['missingFSC']
 
     if 'qScore' in emdData:
         if 'ProportionUnderZero' in emdData['qScore']:
@@ -100,13 +103,10 @@ for emdCode, emdData in jsonFile.items():
             maskedHor.append(emdData['ImageChecks']['Mask Difference Horizontal'])
             maskedVer.append(emdData['ImageChecks']['Mask Difference Vertical'])
 
-            if emdData['ImageChecks']['ProportionMasked'] > maskingThreshold + 12:
+            if emdData['ImageChecks']['ProportionMasked'] > maskingThreshold:
                 entriesWithIssues[emdCode]['issues']['Masking'] = emdData['ImageChecks']['ProportionMasked']
-                maskingIssues.append(emdCode)
-            elif emdData['ImageChecks']['ProportionMasked'] > maskingThreshold:
-                if abs(emdData['ImageChecks']['Mask Difference Horizontal']) < paddingThreshold and abs(emdData['ImageChecks']['Mask Difference Vertical']) < paddingThreshold:
-                    print(abs(emdData['ImageChecks']['Mask Difference Horizontal']), abs(emdData['ImageChecks']['Mask Difference Vertical']), emdCode)
-                    entriesWithIssues[emdCode]['issues']['Masking'] = emdData['ImageChecks']['ProportionMasked']
+                if abs(emdData['ImageChecks']['Mask Difference Horizontal']) > paddingThreshold and abs(emdData['ImageChecks']['Mask Difference Vertical']) > paddingThreshold:
+                    entriesWithIssues[emdCode]['issues']['Padding'] = 'Possible'
                     maskingIssues.append(emdCode)
 
     if not entriesWithIssues[emdCode]['issues']:  # Check if no issues reported
@@ -129,10 +129,10 @@ with open('jsonCheckOutputs/paddingIssues.csv', 'w', newline='') as csvfile:
 # ---- Outliers ----- #
 
 # FSC
-minPercentileBot, minPercentilMax = calcPercentileRange(fscMinValues, 1, 99)
-finalPercentileBot, finalPercentilMax = calcPercentileRange(fscFinalValues, 0, 99)
-peakPercentileBot, peakPercentilMax = calcPercentileRange(fscPeakNum, 0, 99)
-gradPercentileBot, gradPercentilMax = calcPercentileRange(fscGradient, 0, 99)
+#minPercentileBot, minPercentilMax = calcPercentileRange(fscMinValues, 1, 99)
+#finalPercentileBot, finalPercentilMax = calcPercentileRange(fscFinalValues, 0, 99)
+#peakPercentileBot, peakPercentilMax = calcPercentileRange(fscPeakNum, 0, 99)
+#gradPercentileBot, gradPercentilMax = calcPercentileRange(fscGradient, 0, 99)
 
 # Qscore
 
@@ -140,10 +140,10 @@ gradPercentileBot, gradPercentilMax = calcPercentileRange(fscGradient, 0, 99)
 
 # Masking
 
-maskedPercentileBot, maskedPercentilMax = calcPercentileRange(proportionMasked, 0, 96)
+#maskedPercentileBot, maskedPercentilMax = calcPercentileRange(proportionMasked, 0, 96)
 
-plt.figure()
-plt.plot()
+#plt.figure()
+#plt.plot()
 
 # ------ graph plotting ------- #
 if plotGraphs is True:
