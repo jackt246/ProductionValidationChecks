@@ -11,6 +11,7 @@ class fscChecks():
         try:
             self.fscData = self.json['fsc']
             self.fscCurves = self.fscData['curves']
+            self.fscRelion = self.json['relion_fsc']['curves']
         except KeyError as e:
             raise Exception(f"Error: Required data not found in the JSON file. {e}")
 
@@ -98,3 +99,14 @@ class fscChecks():
         except Exception as e:
             print(f"Error: {e}")
             print('Failed to save figure.')
+
+    def compare_phase_masked(self):
+        fsc_phaserandom = self.fscRelion['phaserandmization']
+        fsc_masked = self.fscRelion['fsc_masked']
+
+        fsc_phaserandom_intergral = np.trapz(fsc_phaserandom)
+        fsc_masked_integral = np.trapz(fsc_masked)
+
+        intergral_div = fsc_masked_integral / fsc_phaserandom_intergral
+
+        return intergral_div

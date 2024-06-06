@@ -39,14 +39,14 @@ plotGraphs = False
 #FSC thresholds:
 minThreshold = -0.1
 finalThreshold = 0.1
-peakThreshold = 3
+peakThreshold = 2
 gradientThreshold = 0.1
+phaseRandomThreshold = 1.1
 
 #Q-score threshold
 qScoreThreshold = 0.3
 
 #Masking threshold
-
 maskingThreshold = 21
 paddingThreshold = 5
 
@@ -56,6 +56,7 @@ fscMinValues = []
 fscFinalValues = []
 fscPeakNum = []
 fscGradient = []
+fscPhaseRandom = []
 
 qScorePropUnderZero = []
 
@@ -87,6 +88,10 @@ for emdCode, emdData in jsonFile.items():
             fscGradient.append(emdData['FSC']['largest gradient'])
             if emdData['FSC']['largest gradient'] > gradientThreshold:
                 entriesWithIssues[emdCode]['issues']['FSCgradientValue'] = emdData['FSC']['largest gradient']
+        if 'Intergral Difference' in emdData['FSC']:
+            fscPhaseRandom.append(emdData['FSC']['Intergral Difference'])
+            if emdData['FSC']['Intergral Difference'] < phaseRandomThreshold:
+                entriesWithIssues[emdCode]['issues']['FSC Intergral Difference'] = emdData['FSC']['Intergral Difference']
 
         if 'missingFSC' in emdData['FSC']:
             entriesWithIssues[emdCode]['issues']['missingFSC'] = emdData['FSC']['missingFSC']
@@ -94,7 +99,7 @@ for emdCode, emdData in jsonFile.items():
     if 'qScore' in emdData:
         if 'ProportionUnderZero' in emdData['qScore']:
             qScorePropUnderZero.append(emdData['qScore']['ProportionUnderZero'])
-            if emdData['qScore']['ProportionUnderZero'] > qScoreThreshold:
+            if emdData['qScore']['ProportionUnderZero'] < qScoreThreshold:
                 entriesWithIssues[emdCode]['issues']['qScoreProportionUnderZero'] = emdData['qScore']['ProportionUnderZero']
 
     if 'ImageChecks' in emdData:
@@ -202,3 +207,6 @@ if plotGraphs is True:
     plt.savefig('jsonCheckOutputs/boxplot.png')
 
     #### ------------ ######
+
+
+print('Complete')

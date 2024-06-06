@@ -1,10 +1,9 @@
 import matplotlib.pyplot as plt
-import requests
 
-from fscChecks import fscChecks
-from fileImport import importJsons
-from qScoreChecks import qScoreChecks
-from imageChecks import falseColourChecks
+from facetChecks.fscChecks import fscChecks
+from fileHandlers.fileImport import importJsons
+from facetChecks.qScoreChecks import qScoreChecks
+from facetChecks.imageChecks import falseColourChecks
 
 
 def writeDicToText(filePath, Dic):

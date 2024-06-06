@@ -1,10 +1,8 @@
 import matplotlib.pyplot as plt
-import json
+from facetChecks.fscChecks import fscChecks
+from fileHandlers.fileImport import importJsons
+from tqdm import tqdm
 
-from fscChecks import fscChecks
-from fileImport import importJsons
-from qScoreChecks import qScoreChecks
-from imageChecks import falseColourChecks
 
 
 def writeDicToText(filePath, Dic):
@@ -40,12 +38,17 @@ if __name__ == '__main__':
     entryList = []
     for line in entries:
         entryList.append(line.replace('\n', ''))
+    checkDic = []
 
-    for entry in entryList:
-
+    for entry in tqdm(entryList, desc='Processing entries'):
         # main URL string
         jsonRequest = importJsons(urlString)
         jsonFile = jsonRequest.requestJsonFile(entry)
+        try:
+            fscChecker = fscChecks(jsonFile)
+            checkDic.append(fscChecker.compare_phase_masked())
+        except Exception as e:
+            print('failed because: {}'.format(e))
 
-        with open('testOutputs/{}.json'.format(entry), 'w') as json_file:
-            json.dump(jsonFile, json_file)
+    print(checkDic)
+    print('Complete')

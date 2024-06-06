@@ -1,6 +1,6 @@
-from fscChecks import fscChecks
+from facetChecks.fscChecks import fscChecks
 import json
-from fileImport import importJsons
+from fileHandlers.fileImport import importJsons
 
 def writeDicToText(filePath, Dic):
     with open(filePath, 'w') as file:

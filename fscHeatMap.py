@@ -1,5 +1,5 @@
-from fscChecks import fscChecks
-from fileImport import importJsons
+from facetChecks.fscChecks import fscChecks
+from fileHandlers.fileImport import importJsons
 import numpy as np
 import matplotlib.pyplot as plt
 

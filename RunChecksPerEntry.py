@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import json
 
-from fscChecks import fscChecks
-from fileImport import importJsons
-from qScoreChecks import qScoreChecks
-from imageChecks import falseColourChecks
+from facetChecks.fscChecks import fscChecks
+from fileHandlers.fileImport import importJsons
+from facetChecks.qScoreChecks import qScoreChecks
+from facetChecks.imageChecks import falseColourChecks
 
 
 def writeDicToText(filePath, Dic):
@@ -60,8 +60,8 @@ if __name__ == '__main__':
                 checkDic[entry]['FSC']['Final Value'] = fscChecker.finalValue()
                 # peak finding
                 checkDic[entry]['FSC']['Detected Peaks'] = fscChecker.peakFinder()
-                #large drop check
-                #checkDic[entry]['FSC']['large drop'] = fscChecker.largeDropCheck()
+                #Phase random check
+                checkDic[entry]['FSC']['Intergral Difference'] = fscChecker.compare_phase_masked()
                 #gradient check
                 checkDic[entry]['FSC']['largest gradient'] = fscChecker.maxGradientCheck()
                 #
@@ -97,3 +97,5 @@ if __name__ == '__main__':
 
     with open('checkJSON_staging.json', 'w') as json_file:
         json.dump(checkDic, json_file)
+
+    print('Complete')
