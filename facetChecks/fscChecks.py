@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from scipy.signal import find_peaks
 
@@ -71,34 +70,7 @@ class fscChecks():
         #  Find peaks in the smoothed data
         peaks, _ = find_peaks(smoothed_data, distance=5, prominence=0.1)  # Adjust distance parameter as needed
 
-        # Plotting the original and smoothed data
-        # plt.figure(figsize=(8, 6))
-        # plt.plot(originalData, label='Original Data')
-        # plt.plot(smoothed_data, label='Smoothed Data')
-        # plt.plot(peaks, smoothed_data[peaks], 'r.', markersize=10, label='Detected Peaks')
-        # plt.legend()
-        # plt.title('Smoothing Data with LOESS')
-        # plt.xlabel('Data Points')
-        # plt.ylabel('Values')
-        # plt.savefig('{}peaks.png'.format(entry))
-        # plt.show()
         return len(peaks)
-    def fscPlotter(self, filepath):
-        try:
-            plt.figure()
-            fsc_values = self.fscCurves['fsc']
-            plt.plot(range(len(fsc_values)), fsc_values)
-            plt.axhline(y=0, color='red', linestyle='--', label='Zero Line')
-            plt.axhline(y=0.143, color='orange', linestyle='--', label='0.143 Line')
-            plt.title(filepath)
-            plt.savefig('{}.png'.format(filepath))
-            plt.close()  # Close the figure to free up memory
-        except FileNotFoundError as e:
-            print(f"FileNotFoundError: {e}")
-            print('Failed to save figure. File not found.')
-        except Exception as e:
-            print(f"Error: {e}")
-            print('Failed to save figure.')
 
     def compare_phase_masked(self):
         fsc_phaserandom = self.fscRelion['phaserandmization']
