@@ -1,7 +1,7 @@
 import json
 
 
-def this_weeks_release(self, status_json_path='/nfs/production/gerard/emdb/archive/staging/status/latest/emdb_update.json'):
+def this_weeks_release(status_json_path='/nfs/production/gerard/emdb/archive/staging/status/latest/emdb_update.json'):
     with open(status_json_path, 'r') as file:
         update_json = json.load(file)
 
