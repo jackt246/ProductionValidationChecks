@@ -29,7 +29,6 @@ def process_entry(entry, runFSC, runMaskCheck, output):
             checkDic[entry]['FSC']['Detected Peaks'] = fscChecker.peakFinder()
             checkDic[entry]['FSC']['Intergral Difference'] = fscChecker.compare_phase_masked()
             checkDic[entry]['FSC']['largest gradient'] = fscChecker.maxGradientCheck()
-            checkDic[entry]['FSC']['largest gradient'] = fscChecker.maxGradientCheck()
         except Exception as e:
             checkDic[entry]['FSC']['missingFSC'] = 'True'
 
@@ -52,7 +51,6 @@ def process_entry(entry, runFSC, runMaskCheck, output):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process entries for validation.')
     parser.add_argument('--entry', type=str, help='path to a single entry va file')
-    parser.add_argument('--entry_file', type=str, help='file paths to several entries')
     parser.add_argument('--output', type=str, default='facet_check_output.json', help='Output JSON file')
     parser.add_argument('--runFSC', action='store_true', help='Run FSC checks')
     parser.add_argument('--runMaskCheck', action='store_true', help='Run Mask checks')
