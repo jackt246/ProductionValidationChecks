@@ -33,8 +33,8 @@ class VaAssessment:
             self.issue_dic[entry]['fsc_issues']['end_value'] = fsc_data['endValue']
         if 'peaks' in fsc_data and fsc_data['peaks'] > peakThreshold:
             self.issue_dic[entry]['fsc_issues']['peaks'] = fsc_data['peaks']
-        if 'overfit_zone' in fsc_data and fsc_data['largest gradient'] > gradientThreshold:
-            self.issue_dic[entry]['FSCgradientValue'] = fsc_data['largest gradient']
+        if 'largestGradient' in fsc_data and fsc_data['largestGradient'] > gradientThreshold:
+            self.issue_dic[entry]['FSCgradientValue'] = fsc_data['largestGradient']
         if 'overfit_zone' in fsc_data and fsc_data['Intergral Difference'] < phaseRandomThreshold:
             self.issue_dic[entry]['FSC Intergral Difference'] = fsc_data['overfit_zone']
 
