@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-from facetChecks.fscChecks import fscChecks
-from fileHandlers.fileImport import importJsons
+from facet_checks.fsc_checks import fscChecks
+from file_handlers.file_import import importJsons
 from tqdm import tqdm
 
 

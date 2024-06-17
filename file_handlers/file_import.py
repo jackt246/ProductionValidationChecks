@@ -2,6 +2,7 @@ import json
 import requests
 import logging
 import re
+import os
 
 
 class importJsons():
@@ -46,11 +47,6 @@ class StatusJsonReader:
 
         return update_json['Releases']['entries']
 
-
-
-
-
-
 class VaFileFinder:
     def __init__(self, va_path='/hps/nobackup/gerard/emdb/va/entry_results'):
         self.va_path = va_path
@@ -63,10 +59,13 @@ class VaFileFinder:
         entry = entry.strip('EMD-')
         # Find path depending on 4/5 digits
         if len(entry) == 4:
-            full_va_path = f"{self.va_path}/{entry[0]}{entry[1]}/EMD-{entry}"
+            full_va_path = f"{self.va_path}/{entry[0]}{entry[1]}/{entry}/va/checks/{entry}_all_checks.json"
         elif len(entry) == 5:
-            full_va_path = f"{self.va_path}/{entry[0]}{entry[1]}/{entry[2]}/EMD-{entry}"
+            full_va_path = f"{self.va_path}/{entry[0]}{entry[1]}/{entry[2]}/{entry}/va/checks/{entry}_all_checks.json"
         else:
-            raise ValueError('EMD IDs need to be 4 or 5 digit')
+            raise ValueError('Unable to find that ID')
+        #check file exists
+        if os.path.exists(full_va_path) == False:
+            raise ValueError('{} - file not found'.format(full_va_path))
 
         return full_va_path
