@@ -19,7 +19,9 @@ class VaAssessment:
         self.issue_dic = {}
     def fsc_assessment(self):
         assert self.feature_extraction_data[self.entry_number]['FSC'], 'FSC info not in file'
+        assert self.feature_extraction_data[self.entry_number]['feature_zones'], 'feature zones not in file'
         fsc_data = self.feature_extraction_data[self.entry_number]['FSC']
+        feature_zone = self.feature_extraction_data[self.entry_number]['feature_zones']
         # FSC thresholds:
         min_threshold = -0.1
         final_threshold = 0.1
@@ -35,8 +37,9 @@ class VaAssessment:
             self.issue_dic[entry]['fsc_issues']['peaks'] = fsc_data['peaks']
         if 'largestGradient' in fsc_data and fsc_data['largestGradient'] > gradientThreshold:
             self.issue_dic[entry]['FSCgradientValue'] = fsc_data['largestGradient']
-        if 'overfit_zone' in fsc_data and fsc_data['Intergral Difference'] < phaseRandomThreshold:
-            self.issue_dic[entry]['FSC Intergral Difference'] = fsc_data['overfit_zone']
+        if 'overfit_zone' in feature_zone and feature_zone['feature_zone_ratio'] < phaseRandomThreshold:
+            self.issues['FSC']['feature_zone_ratio'] = feature_zone['feature_zone_ratio']
+
 
     def masking_assessment(self):
         #Masking threshold
